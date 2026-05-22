@@ -11,7 +11,7 @@ export function LandingPage() {
               <div className="bg-orange-600 rounded-lg p-2">
                 <UtensilsCrossed className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-semibold text-gray-900">FeedbackHub</span>
+              <span className="text-xl font-semibold text-gray-900">Cafe Javas</span>
             </div>
             {/* No login or admin link visible to clients */}
           </div>
