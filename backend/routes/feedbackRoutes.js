@@ -26,11 +26,18 @@ function dayLabel(date) {
 // GET /api/feedback/summary  (admin only)
 router.get('/summary', requireAuth, requireRole('admin'), async (req, res) => {
   try {
-  const months = parsePositiveInt(req.query.months, 6);
-  const days = parsePositiveInt(req.query.days, 30);
+    const months = parsePositiveInt(req.query.months, 6);
+    const days = parsePositiveInt(req.query.days, 30);
+    const startDateRaw = req.query.startDate ? String(req.query.startDate) : '';
     const now = new Date();
     const start = new Date(now.getFullYear(), now.getMonth() - (months - 1), 1);
-  const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
+    let dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - (days - 1));
+    if (startDateRaw) {
+      const parsed = new Date(startDateRaw);
+      if (!Number.isNaN(parsed.getTime())) {
+        dayStart = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+      }
+    }
 
     const [total, byStatus, categories, monthlyAgg, dailyAgg, avgResponseAgg] = await Promise.all([
       Feedback.countDocuments({}),
@@ -99,7 +106,10 @@ router.get('/summary', requireAuth, requireRole('admin'), async (req, res) => {
     });
 
     const daily = [];
-    for (let i = 0; i < days; i += 1) {
+    const dayCount = startDateRaw
+      ? Math.max(1, Math.ceil((now.getTime() - dayStart.getTime()) / (1000 * 60 * 60 * 24)) + 1)
+      : days;
+    for (let i = 0; i < dayCount; i += 1) {
       const date = new Date(dayStart.getFullYear(), dayStart.getMonth(), dayStart.getDate() + i);
       const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
       const found = dailyMap.get(key) || { total: 0, resolved: 0 };

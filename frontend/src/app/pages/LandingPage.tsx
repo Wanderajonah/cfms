@@ -110,7 +110,7 @@ export function LandingPage() {
       <footer className="bg-gray-50 border-t border-gray-200 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-gray-600">
-            © 2026 FeedbackHub. Making dining experiences better, one feedback at a time.
+            © 2026 cafejavas. Making dining experiences better, one feedback at a time.
           </p>
         </div>
       </footer>

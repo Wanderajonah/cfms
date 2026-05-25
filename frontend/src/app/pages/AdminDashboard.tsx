@@ -3,7 +3,7 @@ import { StatCard } from '../components/StatCard';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { MessageSquare, Clock, CheckCircle, TrendingUp, ArrowRight } from 'lucide-react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, ComposedChart, Line, Area, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Link } from 'react-router';
 import { api, Feedback, FeedbackSummary } from '../lib/api';
 
@@ -18,7 +18,7 @@ export function AdminDashboard() {
     (async () => {
       try {
         const res = await api.feedback.list({ limit: 4, page: 1, sort: '-createdAt' });
-        const summaryRes = await api.feedback.summary();
+  const summaryRes = await api.feedback.summary({ startDate: '2026-05-20' });
         if (!cancelled) {
           setRecentFeedback(res.items);
           setSummary(summaryRes);
@@ -85,15 +85,51 @@ export function AdminDashboard() {
           <Card className="p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Feedback Trends</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={summary?.daily ?? []}>
+              <ComposedChart data={summary?.daily ?? []} margin={{ top: 8, right: 16, left: 0, bottom: 8 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="total" stroke="#ea580c" strokeWidth={2} name="Total Feedback" />
-                <Line type="monotone" dataKey="resolved" stroke="#22c55e" strokeWidth={2} name="Resolved" />
-              </LineChart>
+                <XAxis
+                  dataKey="date"
+                  stroke="#6b7280"
+                  tick={{ fontSize: 12 }}
+                  interval={(() => {
+                    const len = (summary?.daily?.length || 0);
+                    if (len <= 6) return 0;
+                    return Math.max(1, Math.floor(len / 6));
+                  })()}
+                />
+                <YAxis stroke="#6b7280" allowDecimals={false} />
+                <Tooltip
+                  formatter={(value: any, name: string) => [value, name === 'total' ? 'Total feedback' : 'Resolved']}
+                  labelFormatter={(label: any) => `Date: ${label}`}
+                />
+                <Legend verticalAlign="bottom" height={36} />
+
+                <Area type="monotone" dataKey="total" fill="#ffedd5" stroke="transparent" fillOpacity={0.6} />
+
+                <Line
+                  type="monotone"
+                  dataKey="total"
+                  stroke="#ea580c"
+                  strokeWidth={2}
+                  dot={{ r: 3 }}
+                  activeDot={{ r: 6 }}
+                  name="Total Feedback"
+                  isAnimationActive={true}
+                  animationDuration={600}
+                />
+
+                <Line
+                  type="monotone"
+                  dataKey="resolved"
+                  stroke="#22c55e"
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                  activeDot={{ r: 5 }}
+                  name="Resolved"
+                  isAnimationActive={true}
+                  animationDuration={600}
+                />
+              </ComposedChart>
             </ResponsiveContainer>
           </Card>
 

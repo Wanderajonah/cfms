@@ -139,7 +139,12 @@ export const api = {
       request<Feedback>(`/api/feedback/${id}/resolve`, { method: 'POST', body: JSON.stringify({ staffNotes }) }),
     escalate: (id: string) =>
       request<Feedback>(`/api/feedback/${id}/escalate`, { method: 'POST' }),
-    summary: () => request<FeedbackSummary>('/api/feedback/summary'),
+    summary: (params: { startDate?: string } = {}) => {
+      const qs = new URLSearchParams();
+      if (params.startDate) qs.set('startDate', params.startDate);
+      const suffix = qs.toString() ? `?${qs.toString()}` : '';
+      return request<FeedbackSummary>(`/api/feedback/summary${suffix}`);
+    },
   },
   contacts: {
     list: (search?: string) => {
