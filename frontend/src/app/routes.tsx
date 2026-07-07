@@ -30,6 +30,7 @@ export const router = createBrowserRouter([
     Component: StaffLayout,
     children: [
       { index: true, Component: StaffPanel },
+      { path: "feedback/:id", Component: FeedbackDetail },
       { path: "profile", Component: ProfilePage },
     ],
   },

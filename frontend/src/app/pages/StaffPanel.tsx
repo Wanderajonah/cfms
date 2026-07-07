@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { StatCard } from '../components/StatCard';
-import { CheckCircle, Clock, AlertCircle, Star, MessageSquare } from 'lucide-react';
+import { CheckCircle, Clock, AlertCircle, Star, MessageSquare, ArrowUpCircle } from 'lucide-react';
 import { api, Feedback } from '../lib/api';
 import { useAuth } from '../lib/auth';
 
@@ -50,6 +50,17 @@ export function StaffPanel() {
 
   const handleAddNote = async (id: string) => {
     alert(`Note saved locally (sent on resolve).`);
+  };
+
+  const handleEscalate = async (id: string) => {
+    try {
+      await api.feedback.escalate(id);
+      const res = await api.feedback.list({ assignedTo: user?.email || '', limit: 100, page: 1, sort: '-createdAt' });
+      setAssignments(res.items);
+      alert('Feedback escalated to management');
+    } catch (err: any) {
+      alert(err?.message || 'Failed to escalate');
+    }
   };
 
   return (
@@ -162,6 +173,13 @@ export function StaffPanel() {
                               <span>Mark as Resolved</span>
                             </button>
                             <button
+                              onClick={() => handleEscalate(assignment._id)}
+                              className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                            >
+                              <ArrowUpCircle className="w-4 h-4" />
+                              <span>Escalate</span>
+                            </button>
+                            <button
                               onClick={() => handleAddNote(assignment._id)}
                               disabled={!actionNote[assignment._id]}
                               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium disabled:opacity-50"
@@ -169,7 +187,7 @@ export function StaffPanel() {
                               Add Note
                             </button>
                             <Link
-                              to={`/admin/feedback/${assignment._id}`}
+                              to={`/staff/feedback/${assignment._id}`}
                               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
                             >
                               View Details

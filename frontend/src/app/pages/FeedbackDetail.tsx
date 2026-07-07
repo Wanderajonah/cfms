@@ -4,10 +4,13 @@ import { Card } from '../components/Card';
 import { Badge } from '../components/Badge';
 import { ArrowLeft, Star, Mail, Phone, User, Calendar, AlertCircle, Send, CheckCircle } from 'lucide-react';
 import { api, Feedback } from '../lib/api';
+import { useAuth } from '../lib/auth';
 import type { User as StaffUser } from '../lib/api';
 
 export function FeedbackDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
+  const backPath = user?.role === 'staff' ? '/staff' : '/admin/feedback';
   const [response, setResponse] = useState('');
   const [newStatus, setNewStatus] = useState<'pending' | 'in-progress' | 'resolved' | 'escalated'>('pending');
   const [assignee, setAssignee] = useState('');
@@ -148,7 +151,7 @@ export function FeedbackDetail() {
         )}
         <div className="mb-6">
           <Link
-            to="/admin/feedback"
+            to={backPath}
             className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -372,6 +375,7 @@ export function FeedbackDetail() {
               </div>
             </Card>
 
+            {user?.role === 'admin' && (
             <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Assignment</h2>
               <div className="space-y-3">
@@ -410,6 +414,7 @@ export function FeedbackDetail() {
                 </button>
               </div>
             </Card>
+            )}
 
             <Card className="p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Actions</h2>
