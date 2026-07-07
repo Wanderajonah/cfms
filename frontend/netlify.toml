@@ -2,6 +2,9 @@
   command = "npm run build"
   publish = "dist"
 
+[build.environment]
+  VITE_API_BASE = "https://cfms-0pvi.onrender.com"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
