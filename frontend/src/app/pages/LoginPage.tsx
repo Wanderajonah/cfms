@@ -171,7 +171,7 @@ export function LoginPage() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     className="w-full rounded-lg border border-[#e5d8cf] bg-white py-2.5 pl-10 pr-10 text-sm text-stone-800 placeholder-stone-400 transition focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-                    placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"
+                    placeholder="••••••••"
                   />
                   <button
                     type="button"
