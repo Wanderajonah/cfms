@@ -322,11 +322,11 @@ router.post('/:id/escalate', requireAuth, requireRole('admin', 'staff'), async (
       return res.status(400).json({ message: 'Invalid feedback id' });
     }
 
-    const feedback = await Feedback.findByIdAndUpdate(
-      id,
-      { status: 'escalated', priority: 'high' },
-      { new: true, runValidators: true }
-    );
+    const { note } = req.body ?? {};
+    const update = { status: 'escalated', priority: 'high' };
+    if (typeof note === 'string' && note.trim()) update.escalationNote = note.trim();
+
+    const feedback = await Feedback.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!feedback) return res.status(404).json({ message: 'Feedback not found' });
     res.json(feedback);
   } catch (err) {

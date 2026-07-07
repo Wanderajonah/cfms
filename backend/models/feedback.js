@@ -39,6 +39,7 @@ const feedbackSchema = new mongoose.Schema(
     },
     assignedTo: { type: String, trim: true },
     staffNotes: { type: String, trim: true },
+    escalationNote: { type: String, trim: true },
     response: { type: String, trim: true },
     respondedAt: { type: Date },
     resolvedAt: { type: Date },

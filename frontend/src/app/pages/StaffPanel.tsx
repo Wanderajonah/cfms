@@ -11,6 +11,8 @@ export function StaffPanel() {
   const { user } = useAuth();
   const [selectedTab, setSelectedTab] = useState<'active' | 'resolved'>('active');
   const [actionNote, setActionNote] = useState<{ [key: string]: string }>({});
+  const [escalateNote, setEscalateNote] = useState<{ [key: string]: string }>({});
+  const [escalatingId, setEscalatingId] = useState<string | null>(null);
   const [assignments, setAssignments] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -53,10 +55,16 @@ export function StaffPanel() {
   };
 
   const handleEscalate = async (id: string) => {
+    const reason = escalateNote[id]?.trim();
+    if (!reason) {
+      alert('Please enter a reason for escalation');
+      return;
+    }
     try {
-      await api.feedback.escalate(id);
+      await api.feedback.escalate(id, reason);
       const res = await api.feedback.list({ assignedTo: user?.email || '', limit: 100, page: 1, sort: '-createdAt' });
       setAssignments(res.items);
+      setEscalatingId(null);
       alert('Feedback escalated to management');
     } catch (err: any) {
       alert(err?.message || 'Failed to escalate');
@@ -164,6 +172,15 @@ export function StaffPanel() {
                             placeholder="Add resolution notes or actions taken..."
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
                           />
+                          {escalatingId === assignment._id && (
+                            <textarea
+                              value={escalateNote[assignment._id] || ''}
+                              onChange={(e) => setEscalateNote({ ...escalateNote, [assignment._id]: e.target.value })}
+                              rows={2}
+                              placeholder="Reason for escalation..."
+                              className="w-full px-3 py-2 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm"
+                            />
+                          )}
                           <div className="flex space-x-2">
                             <button
                               onClick={() => handleResolve(assignment._id)}
@@ -172,13 +189,31 @@ export function StaffPanel() {
                               <CheckCircle className="w-4 h-4" />
                               <span>Mark as Resolved</span>
                             </button>
-                            <button
-                              onClick={() => handleEscalate(assignment._id)}
-                              className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                            >
-                              <ArrowUpCircle className="w-4 h-4" />
-                              <span>Escalate</span>
-                            </button>
+                            {escalatingId === assignment._id ? (
+                              <>
+                                <button
+                                  onClick={() => handleEscalate(assignment._id)}
+                                  className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                                >
+                                  <ArrowUpCircle className="w-4 h-4" />
+                                  <span>Confirm Escalate</span>
+                                </button>
+                                <button
+                                  onClick={() => { setEscalatingId(null); setEscalateNote({ ...escalateNote, [assignment._id]: '' }); }}
+                                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => setEscalatingId(assignment._id)}
+                                className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                              >
+                                <ArrowUpCircle className="w-4 h-4" />
+                                <span>Escalate</span>
+                              </button>
+                            )}
                             <button
                               onClick={() => handleAddNote(assignment._id)}
                               disabled={!actionNote[assignment._id]}

@@ -207,6 +207,12 @@ export function FeedbackDetail() {
                   <label className="text-sm font-medium text-gray-700">Message</label>
                   <p className="text-gray-900 mt-1 leading-relaxed">{feedback.message}</p>
                 </div>
+                {feedback.status === 'escalated' && feedback.escalationNote && (
+                  <div>
+                    <label className="text-sm font-medium text-red-700">Escalation Reason</label>
+                    <p className="text-red-800 mt-1 leading-relaxed bg-red-50 rounded-lg p-3">{feedback.escalationNote}</p>
+                  </div>
+                )}
               </div>
             </Card>
 

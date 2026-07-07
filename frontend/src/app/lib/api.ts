@@ -65,6 +65,7 @@ export type Feedback = {
   assignedTo?: string | null;
   response?: string | null;
   staffNotes?: string | null;
+  escalationNote?: string | null;
   createdAt: string;
   updatedAt: string;
   resolvedAt?: string | null;
@@ -137,8 +138,8 @@ export const api = {
       }),
     resolve: (id: string, staffNotes?: string) =>
       request<Feedback>(`/api/feedback/${id}/resolve`, { method: 'POST', body: JSON.stringify({ staffNotes }) }),
-    escalate: (id: string) =>
-      request<Feedback>(`/api/feedback/${id}/escalate`, { method: 'POST' }),
+    escalate: (id: string, note?: string) =>
+      request<Feedback>(`/api/feedback/${id}/escalate`, { method: 'POST', body: JSON.stringify({ note }) }),
     summary: (params: { startDate?: string } = {}) => {
       const qs = new URLSearchParams();
       if (params.startDate) qs.set('startDate', params.startDate);
