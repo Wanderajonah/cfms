@@ -25,17 +25,21 @@ export function DashboardTopbar({ onOpenMobileMenu }: Props) {
   const initial = displayName.charAt(0).toUpperCase();
 
   const [pendingComplaints, setPendingComplaints] = useState(0);
+  const [escalations, setEscalations] = useState(0);
 
   const loadNotifications = useCallback(async () => {
     if (user?.role !== 'admin') {
       setPendingComplaints(0);
+      setEscalations(0);
       return;
     }
     try {
       const res = await api.notifications.adminSummary();
       setPendingComplaints(res.pendingComplaints);
+      setEscalations(res.escalations);
     } catch {
       setPendingComplaints(0);
+      setEscalations(0);
     }
   }, [user?.role]);
 
@@ -91,14 +95,14 @@ export function DashboardTopbar({ onOpenMobileMenu }: Props) {
         </div>
         {user?.role === 'admin' ? (
           <Link
-            to="/admin/feedback?status=pending&type=complaint"
+            to="/admin/feedback?status=escalated"
             className="relative rounded-full p-2 text-stone-500 transition hover:bg-orange-50 hover:text-orange-700"
-            aria-label={`Notifications, ${pendingComplaints} pending complaints`}
+            aria-label={`Notifications, ${pendingComplaints} pending complaints, ${escalations} escalations`}
           >
             <Bell className="h-5 w-5" />
-            {pendingComplaints > 0 && (
+            {pendingComplaints + escalations > 0 && (
               <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white shadow ring-2 ring-white">
-                {pendingComplaints > 99 ? '99+' : pendingComplaints}
+                {pendingComplaints + escalations > 99 ? '99+' : pendingComplaints + escalations}
               </span>
             )}
           </Link>

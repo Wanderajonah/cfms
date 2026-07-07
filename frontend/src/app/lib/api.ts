@@ -155,7 +155,7 @@ export const api = {
       request(`/api/contacts`, { method: 'POST', body: JSON.stringify(payload) }),
   },
   notifications: {
-    adminSummary: () => request<{ pendingComplaints: number }>('/api/notifications/admin'),
+    adminSummary: () => request<{ pendingComplaints: number; escalations: number }>('/api/notifications/admin'),
   },
 };
 

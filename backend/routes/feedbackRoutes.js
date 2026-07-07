@@ -314,8 +314,8 @@ router.post('/:id/resolve', requireAuth, requireRole('admin', 'staff'), async (r
   }
 });
 
-// POST /api/feedback/:id/escalate  (admin only)
-router.post('/:id/escalate', requireAuth, requireRole('admin'), async (req, res) => {
+// POST /api/feedback/:id/escalate  (admin/staff)
+router.post('/:id/escalate', requireAuth, requireRole('admin', 'staff'), async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.isValidObjectId(id)) {
