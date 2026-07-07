@@ -17,9 +17,13 @@ const uploadsRoot = path.join(__dirname, 'uploads');
 fs.mkdirSync(path.join(uploadsRoot, 'avatars'), { recursive: true });
 app.use('/uploads', express.static(uploadsRoot));
 
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(s => s.trim())
+  : ['http://localhost:5173', 'http://localhost:5174'];
+
 // middleware - MUST be before routes
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  origin: allowedOrigins,
   credentials: false,
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
