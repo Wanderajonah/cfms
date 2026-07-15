@@ -14,7 +14,10 @@ const contactRoutes = require('./routes/contactRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
 const uploadsRoot = path.join(__dirname, 'uploads');
-fs.mkdirSync(path.join(uploadsRoot, 'avatars'), { recursive: true });
+//creates uploads folder if it doesn't exist 
+fs.mkdirSync(path.join(uploadsRoot, 'avatars'), { recursive: true 
+});
+//
 app.use('/uploads', express.static(uploadsRoot));
 
 const allowedOrigins = process.env.CORS_ORIGIN
@@ -29,7 +32,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// routes middlewares
+// routes middlewares: these are the route mount points
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/contacts', contactRoutes);

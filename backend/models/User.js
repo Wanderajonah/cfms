@@ -1,4 +1,6 @@
+// Imports Mongoose so we can define a database schema
 const mongoose = require('mongoose');
+//Imports bcryptjs, a library that scrambles (hashes) passwords so they're never stored as plain text in the database.
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
